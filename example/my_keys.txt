@@ -1,0 +1,49 @@
+> Task :gradle:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle:compileKotlin UP-TO-DATE
+> Task :gradle:compileJava NO-SOURCE
+> Task :gradle:compileGroovy NO-SOURCE
+> Task :gradle:pluginDescriptors UP-TO-DATE
+> Task :gradle:processResources UP-TO-DATE
+> Task :gradle:classes UP-TO-DATE
+> Task :gradle:jar UP-TO-DATE
+
+> Task :app:signingReport
+Variant: debug
+Config: debug
+Store: C:\Users\kanag\.android\debug.keystore
+Alias: AndroidDebugKey
+MD5: 78:C4:F2:E0:62:B0:5E:C5:33:27:C5:0E:5D:40:E6:DC
+SHA1: 75:DD:B4:F1:FB:20:03:3A:60:BA:FA:74:D6:65:DA:D9:47:17:5E:44
+SHA-256: 1B:F9:1F:AE:EE:36:C7:40:51:3C:D6:BA:D8:82:34:F1:F8:44:64:C9:96:76:9F:91:3F:31:3D:39:20:3F:9A:BC
+Valid until: Sunday, 26 March, 2056
+----------
+Variant: release
+Config: debug
+Store: C:\Users\kanag\.android\debug.keystore
+Alias: AndroidDebugKey
+MD5: 78:C4:F2:E0:62:B0:5E:C5:33:27:C5:0E:5D:40:E6:DC
+SHA1: 75:DD:B4:F1:FB:20:03:3A:60:BA:FA:74:D6:65:DA:D9:47:17:5E:44
+SHA-256: 1B:F9:1F:AE:EE:36:C7:40:51:3C:D6:BA:D8:82:34:F1:F8:44:64:C9:96:76:9F:91:3F:31:3D:39:20:3F:9A:BC
+Valid until: Sunday, 26 March, 2056
+----------
+Variant: profile
+Config: debug
+Store: C:\Users\kanag\.android\debug.keystore
+Alias: AndroidDebugKey
+MD5: 78:C4:F2:E0:62:B0:5E:C5:33:27:C5:0E:5D:40:E6:DC
+SHA1: 75:DD:B4:F1:FB:20:03:3A:60:BA:FA:74:D6:65:DA:D9:47:17:5E:44
+SHA-256: 1B:F9:1F:AE:EE:36:C7:40:51:3C:D6:BA:D8:82:34:F1:F8:44:64:C9:96:76:9F:91:3F:31:3D:39:20:3F:9A:BC
+Valid until: Sunday, 26 March, 2056
+----------
+Variant: debugAndroidTest
+Config: debug
+Store: C:\Users\kanag\.android\debug.keystore
+Alias: AndroidDebugKey
+MD5: 78:C4:F2:E0:62:B0:5E:C5:33:27:C5:0E:5D:40:E6:DC
+SHA1: 75:DD:B4:F1:FB:20:03:3A:60:BA:FA:74:D6:65:DA:D9:47:17:5E:44
+SHA-256: 1B:F9:1F:AE:EE:36:C7:40:51:3C:D6:BA:D8:82:34:F1:F8:44:64:C9:96:76:9F:91:3F:31:3D:39:20:3F:9A:BC
+Valid until: Sunday, 26 March, 2056
+----------
+
+BUILD SUCCESSFUL in 23s
+5 actionable tasks: 1 executed, 4 up-to-date
