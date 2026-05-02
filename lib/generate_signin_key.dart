@@ -12,7 +12,8 @@ class SigningKeyGenerator {
           abbr: 'c',
           help: 'Run gradlew clean before generating the report.',
           negatable: false)
-      ..addFlag('help', abbr: 'h', help: 'Show this help message.', negatable: false);
+      ..addFlag('help',
+          abbr: 'h', help: 'Show this help message.', negatable: false);
 
     ArgResults argResults;
     try {
@@ -33,7 +34,8 @@ class SigningKeyGenerator {
 
     if (!androidDir.existsSync()) {
       print('Error: No "android" directory found in the current directory.');
-      print('Please run this command from the root of your Flutter or Android project.');
+      print(
+          'Please run this command from the root of your Flutter or Android project.');
       exit(1);
     }
 
@@ -75,7 +77,7 @@ class SigningKeyGenerator {
     );
 
     final List<int> outputBuffer = [];
-    
+
     // Listen to stdout and stderr
     process.stdout.listen((data) {
       stdout.add(data);
@@ -91,16 +93,16 @@ class SigningKeyGenerator {
 
     if (exitCode == 0) {
       print('\nSuccessfully generated signing report!');
-      
+
       final outputOption = argResults['output'] as String?;
       if (outputOption != null || arguments.contains('--output')) {
         // Use default name if only flag provided without value (though option requires value in args package)
         // If the user wants a default, we should have used a flag or a default value.
         // Let's assume they want a default if they use the option.
-        
+
         final filePath = outputOption ?? 'signing_report.txt';
         final outputFile = File(p.join(currentDir, filePath));
-        
+
         try {
           await outputFile.writeAsBytes(outputBuffer);
           print('Report saved to: ${outputFile.path}');
