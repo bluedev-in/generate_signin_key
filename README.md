@@ -1,5 +1,8 @@
 # generate_signin_key
 
+[![pub package](https://img.shields.io/pub/v/generate_signin_key.svg)](https://pub.dev/packages/generate_signin_key)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 <p align="center">
   <img src="https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white" alt="Dart" />
   <img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white" alt="Flutter" />
