@@ -105,10 +105,6 @@ If you find this tool helpful, consider supporting its development!
   <img src="https://img.shields.io/badge/Sponsor-GitHub-ea4aaa?style=for-the-badge&logo=github-sponsors" alt="Sponsor" />
 </a>
 
-<br/>
-
-<iframe src="https://github.com/sponsors/KANAGARAJ-M/button" title="Sponsor KANAGARAJ-M" height="32" width="114" style="border: 0; border-radius: 6px;"></iframe>
-
 ---
 
 ## 📄 License
