@@ -17,6 +17,7 @@ A powerful and simple command-line tool for Flutter and Android developers to qu
 
 - **Auto-Detection**: Automatically finds the `android` directory in your project root.
 - **Gradle Integration**: Executes the `./gradlew signingReport` task seamlessly.
+- **Key Generation**: Easily generate a new release keystore (`.jks`) using `keytool` with interactive prompts.
 - **Multiple Output Formats**: View results in the terminal or save them to a file.
 - **Clean Build**: Option to run `gradlew clean` before generating keys to ensure accuracy.
 - **Cross-Platform**: Works perfectly on Windows, macOS, and Linux.
@@ -31,7 +32,7 @@ Add this to your project's `pubspec.yaml`:
 
 ```yaml
 dev_dependencies:
-  generate_signin_key: ^1.0.0
+  generate_signin_key: ^1.1.0
 ```
 
 ### Global Installation
@@ -56,11 +57,17 @@ dart run generate_signin_key
 
 | Option | Shorthand | Description | Example |
 | :--- | :--- | :--- | :--- |
+| `--new` | `-n` | Generate a new release keystore. | `--new` |
 | `--output` | `-o` | Save the report to a specific file. | `--output keys.txt` |
 | `--clean` | `-c` | Run `gradlew clean` before the report. | `--clean` |
 | `--help` | `-h` | Show the help menu. | `--help` |
 
 ### Detailed Examples
+
+**Generate a new release keystore:**
+```bash
+dart run generate_signin_key --new
+```
 
 **Save to a custom path:**
 ```bash

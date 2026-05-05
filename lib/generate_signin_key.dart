@@ -12,6 +12,10 @@ class SigningKeyGenerator {
           abbr: 'c',
           help: 'Run gradlew clean before generating the report.',
           negatable: false)
+      ..addFlag('new',
+          abbr: 'n',
+          help: 'Generate a new release keystore using keytool.',
+          negatable: false)
       ..addFlag('help',
           abbr: 'h', help: 'Show this help message.', negatable: false);
 
@@ -26,6 +30,11 @@ class SigningKeyGenerator {
 
     if (argResults['help'] as bool) {
       printUsage(parser);
+      return;
+    }
+
+    if (argResults['new'] as bool) {
+      await _generateNewKey();
       return;
     }
 
@@ -96,10 +105,6 @@ class SigningKeyGenerator {
 
       final outputOption = argResults['output'] as String?;
       if (outputOption != null || arguments.contains('--output')) {
-        // Use default name if only flag provided without value (though option requires value in args package)
-        // If the user wants a default, we should have used a flag or a default value.
-        // Let's assume they want a default if they use the option.
-
         final filePath = outputOption ?? 'signing_report.txt';
         final outputFile = File(p.join(currentDir, filePath));
 
@@ -112,6 +117,87 @@ class SigningKeyGenerator {
       }
     } else {
       print('\nFailed to generate signing report. Exit code: $exitCode');
+    }
+  }
+
+  static Future<void> _generateNewKey() async {
+    print('\n--- Generate New Release Keystore ---');
+
+    stdout.write('Enter keystore name (default: upload-keystore.jks): ');
+    String? name = stdin.readLineSync();
+    if (name == null || name.isEmpty) name = 'upload-keystore.jks';
+    if (!name.endsWith('.jks')) name += '.jks';
+
+    stdout.write('Enter keystore password (min 6 chars): ');
+    String? password = stdin.readLineSync();
+    if (password == null || password.length < 6) {
+      print('Error: Password must be at least 6 characters.');
+      return;
+    }
+
+    stdout.write('Enter alias (default: upload): ');
+    String? alias = stdin.readLineSync();
+    if (alias == null || alias.isEmpty) alias = 'upload';
+
+    final currentDir = Directory.current.path;
+    final androidDir = Directory(p.join(currentDir, 'android'));
+    String targetPath;
+
+    if (androidDir.existsSync()) {
+      targetPath = p.join(androidDir.path, 'app', name);
+      print('Target location: android/app/$name');
+    } else {
+      targetPath = p.join(currentDir, name);
+      print('Target location: $name');
+    }
+
+    if (File(targetPath).existsSync()) {
+      stdout.write('File already exists. Overwrite? (y/N): ');
+      final response = stdin.readLineSync()?.toLowerCase();
+      if (response != 'y') {
+        print('Aborted.');
+        return;
+      }
+    }
+
+    print('\nGenerating keystore...');
+
+    final process = await Process.run(
+      'keytool',
+      [
+        '-genkey',
+        '-v',
+        '-keystore',
+        targetPath,
+        '-alias',
+        alias,
+        '-keyalg',
+        'RSA',
+        '-keysize',
+        '2048',
+        '-validity',
+        '10000',
+        '-storepass',
+        password,
+        '-keypass',
+        password,
+        '-dname',
+        'CN=Android, OU=Development, O=NoCorps, L=Unknown, ST=Unknown, C=US',
+      ],
+      runInShell: true,
+    );
+
+    if (process.exitCode == 0) {
+      print('\n✅ Success! Keystore generated at: $targetPath');
+      print('\nAdd the following to your android/key.properties (create if missing):');
+      print('storePassword=$password');
+      print('keyPassword=$password');
+      print('keyAlias=$alias');
+      print('storeFile=${androidDir.existsSync() ? name : targetPath}');
+    } else {
+      print('\n❌ Error generating keystore:');
+      print(process.stderr);
+      print(process.stdout);
     }
   }
 
