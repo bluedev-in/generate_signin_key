@@ -59,11 +59,18 @@ dart run generate_signin_key
 | Option | Shorthand | Description | Example |
 | :--- | :--- | :--- | :--- |
 | `--new` | `-n` | Generate a new release keystore. | `--new` |
+| `--keyexport` | | Export keystore credentials to a file. | `--keyexport data.txt` |
+| `--run` | `-r` | Run a key report after generation. | `--run` |
 | `--output` | `-o` | Save the report to a specific file. | `--output keys.txt` |
 | `--clean` | `-c` | Run `gradlew clean` before the report. | `--clean` |
 | `--help` | `-h` | Show the help menu. | `--help` |
 
 ### Detailed Examples
+
+**Generate a new release keystore, export credentials, and view keys:**
+```bash
+dart run generate_signin_key --new --keyexport release_info.txt --run -o keys.txt
+```
 
 **Generate a new release keystore:**
 ```bash
@@ -93,6 +100,14 @@ generate_signin_key
 2. It identifies the appropriate Gradle wrapper (`gradlew` or `gradlew.bat`).
 3. It grants execution permissions (on Unix systems) and runs the `signingReport` task.
 4. It captures and streams the output, optionally writing it to a file if requested.
+
+## ⚠️ Security Warning
+
+**DO NOT** upload your keystore files (`.jks`), `key.properties`, or the exported credential files to GitHub or any public repository. 
+
+- Always add these files to your `.gitignore`.
+- If you lose your release key, you will **NOT** be able to update your app on the Google Play Store.
+- Keep a secure backup of your keys in a password manager or physical vault.
 
 ---
 

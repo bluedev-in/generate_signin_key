@@ -16,6 +16,12 @@ class SigningKeyGenerator {
           abbr: 'n',
           help: 'Generate a new release keystore using keytool.',
           negatable: false)
+      ..addOption('keyexport',
+          help: 'Export the entered keystore credentials to a file.')
+      ..addFlag('run',
+          abbr: 'r',
+          help: 'Run the signing report after generating a new key.',
+          negatable: false)
       ..addFlag('help',
           abbr: 'h', help: 'Show this help message.', negatable: false);
 
@@ -34,7 +40,7 @@ class SigningKeyGenerator {
     }
 
     if (argResults['new'] as bool) {
-      await _generateNewKey();
+      await _generateNewKey(argResults);
       return;
     }
 
@@ -120,7 +126,7 @@ class SigningKeyGenerator {
     }
   }
 
-  static Future<void> _generateNewKey() async {
+  static Future<void> _generateNewKey(ArgResults argResults) async {
     print('\n--- Generate New Release Keystore ---');
 
     String? keytoolPath = await _findKeytoolPath();
@@ -228,12 +234,52 @@ class SigningKeyGenerator {
 
     if (process.exitCode == 0) {
       print('\n✅ Success! Keystore generated at: $targetPath');
+
+      final keyExport = argResults['keyexport'] as String?;
+      if (keyExport != null) {
+        final exportFile = File(p.join(currentDir, keyExport));
+        final content = '''
+Keystore Details:
+-----------------
+Keystore Path: $targetPath
+Keystore Name: $name
+Password: $password
+Alias: $alias
+DName: $dname
+
+Generated on: ${DateTime.now()}
+''';
+        try {
+          await exportFile.writeAsString(content);
+          print('Credentials exported to: ${exportFile.path}');
+        } catch (e) {
+          print('Error exporting credentials: $e');
+        }
+      }
+
       print(
           '\nAdd the following to your android/key.properties (create if missing):');
       print('storePassword=$password');
       print('keyPassword=$password');
       print('keyAlias=$alias');
       print('storeFile=${androidDir.existsSync() ? name : targetPath}');
+
+      if (argResults['run'] as bool) {
+        await _showKeyDetails(keytoolPath, targetPath, password, alias,
+            argResults['output'] as String?);
+      }
+
+      print('\n--- ⚠️  IMPORTANT SECURITY WARNING ⚠️  ---');
+      print(
+          'DO NOT upload the following files to GitHub or any public repository:');
+      print('1. The Keystore file (.jks): $name');
+      print('2. The key.properties file');
+      if (keyExport != null) {
+        print('3. The exported credentials file: $keyExport');
+      }
+      print(
+          '\nKeep these files safe and private. If you lose your release key, you will NOT be able to update your app on the Play Store!');
+      print('------------------------------------------');
     } else {
       print('\n❌ Error generating keystore:');
       print(process.stderr);
@@ -242,6 +288,45 @@ class SigningKeyGenerator {
         print(
             '\nTip: keytool might not be in your PATH. Try installing JDK or providing the full path to keytool.');
       }
+    }
+  }
+
+  static Future<void> _showKeyDetails(String keytoolPath, String targetPath,
+      String password, String alias, String? outputFile) async {
+    print('\n--- Fetching SHA Keys from Keystore ---');
+
+    final process = await Process.run(
+      keytoolPath,
+      [
+        '-list',
+        '-v',
+        '-keystore',
+        targetPath,
+        '-alias',
+        alias,
+        '-storepass',
+        password,
+      ],
+      runInShell: true,
+    );
+
+    if (process.exitCode == 0) {
+      final output = process.stdout.toString();
+      print(output);
+
+      if (outputFile != null) {
+        final currentDir = Directory.current.path;
+        final file = File(p.join(currentDir, outputFile));
+        try {
+          await file.writeAsString(output);
+          print('Key report saved to: ${file.path}');
+        } catch (e) {
+          print('Error saving key report: $e');
+        }
+      }
+    } else {
+      print('\n❌ Error fetching key details:');
+      print(process.stderr);
     }
   }
 
