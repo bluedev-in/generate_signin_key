@@ -18,6 +18,7 @@ A powerful and simple command-line tool for Flutter and Android developers to qu
 - **Auto-Detection**: Automatically finds the `android` directory in your project root.
 - **Gradle Integration**: Executes the `./gradlew signingReport` task seamlessly.
 - **Key Generation**: Easily generate a new release keystore (`.jks`) using `keytool` with interactive prompts.
+- **Smart Discovery**: Automatically locates `keytool` in common paths (Android Studio, JAVA_HOME, etc.) if not in your PATH.
 - **Multiple Output Formats**: View results in the terminal or save them to a file.
 - **Clean Build**: Option to run `gradlew clean` before generating keys to ensure accuracy.
 - **Cross-Platform**: Works perfectly on Windows, macOS, and Linux.

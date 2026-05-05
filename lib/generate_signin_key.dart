@@ -123,6 +123,8 @@ class SigningKeyGenerator {
   static Future<void> _generateNewKey() async {
     print('\n--- Generate New Release Keystore ---');
 
+    String? keytoolPath = await _findKeytoolPath();
+
     stdout.write('Enter keystore name (default: upload-keystore.jks): ');
     String? name = stdin.readLineSync();
     if (name == null || name.isEmpty) name = 'upload-keystore.jks';
@@ -160,10 +162,47 @@ class SigningKeyGenerator {
       }
     }
 
-    print('\nGenerating keystore...');
+    if (keytoolPath == null) {
+      print('\n⚠️  keytool not found in PATH or common locations.');
+      stdout.write(
+          'Please enter the full path to keytool (or press Enter to try "keytool" anyway): ');
+      keytoolPath = stdin.readLineSync();
+      if (keytoolPath == null || keytoolPath.isEmpty) keytoolPath = 'keytool';
+    }
+
+    print('\n--- Certificate Information ---');
+    print('Please provide details for the certificate (Distinguished Name):');
+
+    stdout.write('First and Last Name (CN) [Android]: ');
+    String cn = stdin.readLineSync() ?? '';
+    if (cn.isEmpty) cn = 'Android';
+
+    stdout.write('Organizational Unit (OU) [Development]: ');
+    String ou = stdin.readLineSync() ?? '';
+    if (ou.isEmpty) ou = 'Development';
+
+    stdout.write('Organization (O) [NoCorps]: ');
+    String o = stdin.readLineSync() ?? '';
+    if (o.isEmpty) o = 'NoCorps';
+
+    stdout.write('City or Locality (L) [Unknown]: ');
+    String l = stdin.readLineSync() ?? '';
+    if (l.isEmpty) l = 'Unknown';
+
+    stdout.write('State or Province (ST) [Unknown]: ');
+    String st = stdin.readLineSync() ?? '';
+    if (st.isEmpty) st = 'Unknown';
+
+    stdout.write('Country Code (C, 2 letters) [IN]: ');
+    String c = stdin.readLineSync() ?? '';
+    if (c.isEmpty) c = 'IN';
+
+    final dname = 'CN=$cn, OU=$ou, O=$o, L=$l, ST=$st, C=$c';
+
+    print('\nGenerating keystore using: $keytoolPath');
 
     final process = await Process.run(
-      'keytool',
+      keytoolPath,
       [
         '-genkey',
         '-v',
@@ -182,14 +221,15 @@ class SigningKeyGenerator {
         '-keypass',
         password,
         '-dname',
-        'CN=Android, OU=Development, O=NoCorps, L=Unknown, ST=Unknown, C=US',
+        dname,
       ],
       runInShell: true,
     );
 
     if (process.exitCode == 0) {
       print('\n✅ Success! Keystore generated at: $targetPath');
-      print('\nAdd the following to your android/key.properties (create if missing):');
+      print(
+          '\nAdd the following to your android/key.properties (create if missing):');
       print('storePassword=$password');
       print('keyPassword=$password');
       print('keyAlias=$alias');
@@ -198,7 +238,91 @@ class SigningKeyGenerator {
       print('\n❌ Error generating keystore:');
       print(process.stderr);
       print(process.stdout);
+      if (keytoolPath == 'keytool') {
+        print(
+            '\nTip: keytool might not be in your PATH. Try installing JDK or providing the full path to keytool.');
+      }
     }
+  }
+
+  static Future<String?> _findKeytoolPath() async {
+    // 1. Try PATH
+    try {
+      final result = await Process.run(
+        Platform.isWindows ? 'where' : 'which',
+        ['keytool'],
+        runInShell: true,
+      );
+      if (result.exitCode == 0) {
+        return result.stdout.toString().split('\n').first.trim();
+      }
+    } catch (_) {}
+
+    // 2. Try to find java and look next to it
+    try {
+      final result = await Process.run(
+        Platform.isWindows ? 'where' : 'which',
+        ['java'],
+        runInShell: true,
+      );
+      if (result.exitCode == 0) {
+        final javaPath = result.stdout.toString().split('\n').first.trim();
+        final javaDir = p.dirname(javaPath);
+        final keytoolPath =
+            p.join(javaDir, Platform.isWindows ? 'keytool.exe' : 'keytool');
+        if (File(keytoolPath).existsSync()) {
+          return keytoolPath;
+        }
+      }
+    } catch (_) {}
+
+    // 3. Check JAVA_HOME
+    final javaHome = Platform.environment['JAVA_HOME'];
+    if (javaHome != null && javaHome.isNotEmpty) {
+      final exe = Platform.isWindows ? 'keytool.exe' : 'keytool';
+      final path = p.join(javaHome, 'bin', exe);
+      if (File(path).existsSync()) {
+        return path;
+      }
+    }
+
+    // 4. Check common Android Studio paths
+    final List<String> commonPaths = [];
+    if (Platform.isWindows) {
+      final programFiles =
+          Platform.environment['ProgramFiles'] ?? r'C:\Program Files';
+      final localAppData = Platform.environment['LOCALAPPDATA'] ?? '';
+      commonPaths.addAll([
+        p.join(programFiles, 'Android', 'Android Studio', 'jbr', 'bin',
+            'keytool.exe'),
+        p.join(programFiles, 'Android', 'Android Studio', 'jre', 'bin',
+            'keytool.exe'),
+        p.join(localAppData, 'Android', 'Android Studio', 'jbr', 'bin',
+            'keytool.exe'),
+        p.join(localAppData, 'Android', 'Android Studio', 'jre', 'bin',
+            'keytool.exe'),
+      ]);
+    } else if (Platform.isMacOS) {
+      commonPaths.addAll([
+        '/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/keytool',
+        '/Applications/Android Studio.app/Contents/jre/Contents/Home/bin/keytool',
+      ]);
+    } else if (Platform.isLinux) {
+      commonPaths.addAll([
+        '/opt/android-studio/jbr/bin/keytool',
+        '/opt/android-studio/jre/bin/keytool',
+        '/usr/local/android-studio/jbr/bin/keytool',
+        '/snap/android-studio/current/jbr/bin/keytool',
+      ]);
+    }
+
+    for (final path in commonPaths) {
+      if (File(path).existsSync()) {
+        return path;
+      }
+    }
+
+    return null;
   }
 
   static void printUsage(ArgParser parser) {
