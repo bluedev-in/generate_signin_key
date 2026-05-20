@@ -127,7 +127,7 @@ Contributions are welcome! If you find a bug or have a feature request, please o
 
 If you find this tool helpful, consider supporting its development!
 
-<a href="https://github.com/sponsors/KANAGARAJ-M">
+<a href="https://github.com/sponsors/bluedev-in">
   <img src="https://img.shields.io/badge/Sponsor-GitHub-ea4aaa?style=for-the-badge&logo=github-sponsors" alt="Sponsor" />
 </a>
 
@@ -140,5 +140,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 <p align="center">
-  Developed with ❤️ by <a href="https://github.com/KANAGARAJ-M">KANAGARAJ M</a>
+  Developed with ❤️ by <a href="https://github.com/bluedev-in">bluedev-in</a>
 </p>

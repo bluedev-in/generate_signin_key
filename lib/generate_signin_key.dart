@@ -187,9 +187,9 @@ class SigningKeyGenerator {
     String ou = stdin.readLineSync() ?? '';
     if (ou.isEmpty) ou = 'Development';
 
-    stdout.write('Organization (O) [NoCorps]: ');
+    stdout.write('Organization (O) [Bluedev]: ');
     String o = stdin.readLineSync() ?? '';
-    if (o.isEmpty) o = 'NoCorps';
+    if (o.isEmpty) o = 'Bluedev';
 
     stdout.write('City or Locality (L) [Unknown]: ');
     String l = stdin.readLineSync() ?? '';

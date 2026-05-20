@@ -1,0 +1,9 @@
+Keystore Details:
+-----------------
+Keystore Path: C:\Users\kanag\Desktop\packages\generate_signin_key\example\android\app\upload-keystore.jks
+Keystore Name: upload-keystore.jks
+Password: Aaaa@1234
+Alias: upload
+DName: CN=Android, OU=Development, O=Bluedev, L=Unknown, ST=Unknown, C=IN
+
+Generated on: 2026-05-05 18:17:29.715267
